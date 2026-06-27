@@ -1,3 +1,7 @@
+import tmi from 'https://cdn.jsdelivr.net/npm/tmi.js/+esm';
+
+const chat = document.getElementById('chat');
+
 const client = new tmi.Client({
     channels: ['oat4u']
 });
@@ -10,26 +14,21 @@ client.on('message', (channel, tags, message, self) => {
     addMessage(tags, message);
 });
 
-const chat = document.getElementById('chat');
-
 function addMessage(tags, text) {
-
     const msg = document.createElement('div');
     msg.className = 'message';
 
     const username = tags['display-name'];
-    const color = tags.color || '#ffffff';
+    const color = tags.color || '#fff';
 
     msg.innerHTML = `
         <span class="user" style="color:${color}">
-            ${username}
+            ${username}:
         </span>
         <span>${text}</span>
     `;
 
     chat.appendChild(msg);
 
-    setTimeout(() => {
-        msg.remove();
-    }, 20000);
+    setTimeout(() => msg.remove(), 20000);
 }
