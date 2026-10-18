@@ -3,7 +3,7 @@ import tmi from 'https://cdn.jsdelivr.net/npm/tmi.js/+esm';
 const chat = document.getElementById('chat');
 
 const client = new tmi.Client({
-    channels: ['Kametyyy'] 
+    channels: ['Oat4u'] 
 });
 
 client.connect();
