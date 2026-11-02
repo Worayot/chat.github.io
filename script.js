@@ -13,49 +13,64 @@ client.on('message', (channel, tags, message, self) => {
     addMessage(tags, message);
 });
 
+
 function addMessage(tags, text) {
     const msg = document.createElement('div');
     msg.className = 'message';
 
-    const username = tags['display-name'];
+    const username = tags['display-name'] || tags.username;
     const color = tags.color || '#f0f8ff';
 
-    // 1. Process Emotes
+    // Process emotes and badges
     const messageWithEmotes = parseEmotes(text, tags.emotes);
-    
-    // 2. Process Badges
     const badgesHtml = parseBadges(tags.badges);
+
+    // Escape username to prevent HTML injection
+    const safeUsername = escapeHTML(username);
 
     msg.innerHTML = `
         <div class="user-info">
             ${badgesHtml}
-            <span class="user" style="color: ${color}; text-shadow: 0 0 8px ${color}88;">
-                ${username}
+            <span class="user"
+                style="color: ${escapeHTML(color)};
+                       text-shadow: 0 0 8px ${escapeHTML(color)}88;">
+                ${safeUsername}
             </span>
         </div>
-        <div class="message-text">${messageWithEmotes}</div>
+
+        <div class="message-text">
+            ${messageWithEmotes}
+        </div>
     `;
 
     chat.appendChild(msg);
 
-    // Auto-scroll to bottom (optional, good for chat widgets)
+    // Auto-scroll
     chat.scrollTop = chat.scrollHeight;
 
+    // Fade out after 20 seconds
     setTimeout(() => {
         msg.classList.add('fade-out');
-        setTimeout(() => msg.remove(), 500); // Wait for fade out animation before removing
+
+        setTimeout(() => msg.remove(), 500);
     }, 20000);
 }
 
-// --- Helper: Emote Parser ---
-function parseEmotes(text, emotes) {
-    // Escape HTML first for safety
-    let htmlText = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[char]);
+}
 
-    if (!emotes) return htmlText;
+
+// --- Helper: Emote Parser ---
+
+function parseEmotes(text, emotes) {
+    if (!emotes) return escapeHTML(text);
 
     const replacements = [];
 
@@ -72,33 +87,40 @@ function parseEmotes(text, emotes) {
         }
     }
 
-    // Replace from back to front
-    replacements.sort((a, b) => b.start - a.start);
+    // Sort emotes by their original position
+    replacements.sort((a, b) => a.start - b.start);
 
-    for (const { id, start, end, text: emoteText } of replacements) {
+    let result = '';
+    let lastIndex = 0;
 
-        // Animated emotes if available, fallback to static
+    for (const emote of replacements) {
+        // Normal text before emote
+        result += escapeHTML(
+            text.substring(lastIndex, emote.start)
+        );
+
         const emoteUrl =
-            `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/3.0`;
+            `https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/dark/3.0`;
 
-        const emoteImg = `
+        result += `
             <img
                 src="${emoteUrl}"
                 class="emote"
-                alt="${emoteText}"
-                title="${emoteText}"
+                alt="${escapeHTML(emote.text)}"
+                title="${escapeHTML(emote.text)}"
                 loading="lazy"
             >
         `;
 
-        htmlText =
-            htmlText.substring(0, start) +
-            emoteImg +
-            htmlText.substring(end + 1);
+        lastIndex = emote.end + 1;
     }
 
-    return htmlText;
+    // Remaining normal text
+    result += escapeHTML(text.substring(lastIndex));
+
+    return result;
 }
+
 
 function parseBadges(badges) {
     if (!badges) return '';
