@@ -13,6 +13,42 @@ client.on('message', (channel, tags, message, self) => {
     addMessage(tags, message);
 });
 
+client.on('cheer', (channel, tags, message) => {
+    addAlert('BITS!', tags.username, `${tags.bits} Bits`);
+});
+
+client.on('subscription', (channel, username) => {
+    addAlert('NEW SUBSCRIBER!', username);
+});
+
+client.on('subgift', (channel, username, streakMonths, recipient) => {
+    addAlert('GIFT SUB!', username, `Gifted to ${recipient}`);
+});
+
+client.on('raided', (channel, username, viewers) => {
+    addAlert('RAID!', username, `${viewers} viewers`);
+});
+
+function addAlert(title, username, description = '') {
+    const container = document.getElementById('alerts');
+
+    const alert = document.createElement('div');
+    alert.className = 'alert';
+
+    const heading = document.createElement('h2');
+    heading.textContent = title;
+
+    const name = document.createElement('p');
+    name.textContent = username;
+
+    const detail = document.createElement('p');
+    detail.textContent = description;
+
+    alert.append(heading, name, detail);
+    container.appendChild(alert);
+
+    setTimeout(() => alert.remove(), 8000);
+}
 
 function addMessage(tags, text) {
     const msg = document.createElement('div');
