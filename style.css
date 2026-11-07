@@ -1,9 +1,8 @@
 body {
     margin: 0;
-    /* Keeps the background transparent for OBS */
     background: transparent;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Noto Sans Thai', sans-serif;
 }
 
 #chat {
@@ -34,6 +33,9 @@ body {
 .message-text {
     position: relative;
     z-index: 1;
+
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-weight: 500;
 
     display: inline-block;
     width: fit-content;
@@ -106,7 +108,8 @@ body {
 
 
 .user {
-    font-weight: 800;
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-weight: 500;
     color: #ffffff;
     margin-right: 2px;
 
@@ -200,6 +203,7 @@ body {
 .alert h2 {
     margin: 0 0 8px;
     font-size: 20px;
+    font-family: 'Noto Sans Thai', sans-serif;
     font-weight: 900;
     letter-spacing: 2px;
     color: #ffe680;
@@ -212,6 +216,7 @@ body {
 .alert p:nth-of-type(1) {
     margin: 4px 0;
     font-size: 22px;
+    font-family: 'Noto Sans Thai', sans-serif;
     font-weight: 800;
     color: #ffffff;
 
@@ -221,6 +226,7 @@ body {
 .alert p:nth-of-type(2) {
     margin: 4px 0 0;
     font-size: 15px;
+    font-family: 'Noto Sans Thai', sans-serif;
     color: #fff4c2;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
